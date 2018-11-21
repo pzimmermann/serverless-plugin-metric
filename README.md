@@ -5,7 +5,7 @@ A [serverless](http://www.serverless.com) plugin to automatically create `AWS:Lo
 
 ## Requirements
 - Node: >= 4.6.1
-- Serverless: >= 1.24.1 (older versions not tested)
+- Serverless: >= 1.28.0 (older versions not tested)
 
 ## Installation
 
