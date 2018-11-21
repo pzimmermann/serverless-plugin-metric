@@ -1,3 +1,5 @@
+/* jshint ignore:start */
+'use strict';
 
 const pascalcase = require('pascalcase');
 
@@ -53,26 +55,10 @@ const pascalcase = require('pascalcase');
 class MetricPlugin {
     constructor(serverless, options) {
         /**
-         * @type {string}
-         */
-        this.stage = options.stage;
-
-        /**
-         * @type {string}
-         */
-        this.service = serverless.service.service;
-
-        /**
          * @type {object}
          */
         this.serverless = serverless;
-
-        /**
-         * @type {MetricOption[]}
-         */
-        this.metricOptions = serverless.service.custom && serverless.service.custom.metrics
-            ? serverless.service.custom.metrics
-            : [];
+        this.options = options;
 
         /**
          * @type {string}
@@ -85,6 +71,9 @@ class MetricPlugin {
     }
 
     handler() {
+        this.metricOptions = get(this.serverless.service, 'custom.metrics', [])
+        this.service = get(this.serverless.service, 'service')
+        this.stage = get(this.serverless.service, 'provider.stage')
         /**
          * @type {AWSMetricFilterResource[]}
          */
@@ -165,8 +154,12 @@ class MetricPlugin {
         if (!this.serverless.service.provider.compiledCloudFormationTemplate.Resources) {
             this.serverless.service.provider.compiledCloudFormationTemplate.Resources = {};
         }
-        this.serverless.service.provider.compiledCloudFormationTemplate.Resources[name] = resource;
+        this.serverless.service.provider.compiledCloudFormationTemplate.Resources[pascalcase(name)] = resource;
     }
+}
+
+function get(obj, path, def) {
+  return path.split('.').filter(Boolean).every(step => !(step && (obj = obj[step]) === undefined)) ? obj : def;
 }
 
 module.exports = MetricPlugin;
